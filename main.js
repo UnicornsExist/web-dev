@@ -1,33 +1,48 @@
-var button = document.getElementById('button')
-var input = document.getElementById('input')
-var tasksList = document.getElementById('task-list')
-var xButtons = document.getElementById('xButton')
+// DOM objects
+const adjective = document.getElementById('adjective');
+const input = document.getElementById('input');
+const container = document.getElementById('words-container');
+const button = document.getElementById('button');
+// URL and query parameters
+const url = 'https://api.datamuse.com/words'
+const queryParams = '?rel_jja='
 
-function createTask(task) {
-  var taskBody  = document.createElement('li')  // Creating a list item (body of our task)
-  var taskText = document.createElement('p')
-  var doneButton = document.createElement('button')
-
-  taskText.textContent = task
-  doneButton.textContent = 'DONE!'
-  doneButton.id = 'xButton'
-
-  tasksList.appendChild(taskBody)
-  taskBody.appendChild(taskText)
-  taskBody.appendChild(doneButton)
-
-  taskBody.style.border = '1px solid black'
-  taskBody.style.marginTop = '10px'
-
-  doneButton.addEventListener('click', () => {
-    doneButton.parentElement.remove()
-  })
-
-  input.value = ''
-}
-
-
+// Listening events
+// Button click event listener
 button.addEventListener('click', () => {
-  if (input.value) createTask(input.value)
-  else incorrectInput()
-})
+  createRequest();
+});
+// ENTER key pressed event listener
+input.addEventListener('keydown', (event) => {
+  // Checking is the ENTER key was pressed (ENTER === 13 keyCode)
+  if (event.keyCode === 13) {
+    // If ENTER key was pressed
+    createRequest();
+  }
+});
+
+// Creating content
+function createContent(response) {
+  let numberOfWords = response.length;
+  let words = [];
+
+  for (let i = 0; i < numberOfWords; i++) {
+    words.push(response[i].word)
+  };
+
+  container.innerHTML = words.join('\n')
+};
+
+// Getting response using fetch
+function createRequest() {
+  let wordQuery = input.value
+  let endpoint = `${url}${queryParams}${wordQuery}`
+
+  fetch(endpoint).then(response => {
+    if (response.ok) {
+      return response.json()
+    }
+  }, networkError => {
+    console.log(networkError.message)
+  }).then(jsonResponse => {createContent(jsonResponse)})
+}

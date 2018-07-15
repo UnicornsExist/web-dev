@@ -7,6 +7,7 @@ const button = document.getElementById('button');
 const url = 'https://api.datamuse.com/words'
 const queryParams = '?rel_jja='
 
+
 // Listening events
 // Button click event listener
 button.addEventListener('click', () => {
@@ -20,6 +21,12 @@ input.addEventListener('keydown', (event) => {
     createRequest();
   }
 });
+
+// Updating adjective
+function updateAdj() {
+  console.log(input.value)
+  adjective.textContent = input.value;
+};
 
 // Creating content
 function createContent(response) {
@@ -42,6 +49,7 @@ function createRequest() {
     if (response.ok) {
       return response.json()
     }
+    throw new Error('Woops')
   }, networkError => {
     console.log(networkError.message)
   }).then(jsonResponse => {createContent(jsonResponse)})
